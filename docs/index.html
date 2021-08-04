@@ -87,7 +87,16 @@
             
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to Camera Hub’s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to Camera Hub’s documentation!</a><ul>
+<li><a class="reference internal" href="#camera-grasshopper3-usb3">Camera: Grasshopper3 USB3</a></li>
+<li><a class="reference internal" href="#factors-to-consider-when-designing-a-multiple-camera-array">Factors to Consider When Designing a Multiple Camera Array</a><ul>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-synchronized-capture-with-multiple-cameras">Configuring Synchronized Capture with Multiple Cameras</a></li>
+<li><a class="reference internal" href="#saving-images-at-high-bandwidth">Saving Images at High Bandwidth</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -158,7 +167,63 @@
             
   <div class="section" id="welcome-to-camera-hub-s-documentation">
 <h1>Welcome to Camera Hub’s documentation!<a class="headerlink" href="#welcome-to-camera-hub-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>If we want to stitch the images together it’s nearly impossible unless the
+camera has some timestamping methods using something like a PTR because
+USB cameras are really hard to synchronize due to its nature of jittering.</p>
+<p>If we don’t need to stitch the images then we can get the images from the camera and send
+them to the backend machine directly. In that case we won’t be able to find the exact
+position of the defect.</p>
+<div class="section" id="camera-grasshopper3-usb3">
+<h2>Camera: Grasshopper3 USB3<a class="headerlink" href="#camera-grasshopper3-usb3" title="Permalink to this headline">¶</a></h2>
+<p>The datasheet (5.3) says,
+“All images pass through the frame buffer mechanism.
+This introduces relatively little delay in the system.”</p>
+<p>Why Grasshopper?</p>
+</div>
+<div class="section" id="factors-to-consider-when-designing-a-multiple-camera-array">
+<h2>Factors to Consider When Designing a Multiple Camera Array<a class="headerlink" href="#factors-to-consider-when-designing-a-multiple-camera-array" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.flir.eu/support-center/iis/machine-vision/application-note/factors-to-consider-when-designing-a-multiple-camera-array/">https://www.flir.eu/support-center/iis/machine-vision/application-note/factors-to-consider-when-designing-a-multiple-camera-array/</a></p>
+<p>if the first camera in a line of multiple daisy-chained cameras fails, then all subsequent connected cameras will fail too.</p>
+<div class="section" id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h3>
+<p>Bus interface:
+IEEE1394a – 400Mb/s
+IEEE1394b – 800Mb/s
+The IEEE1394 specification limits the maximum number of devices on a single bus to 64
+Hubs:
+- the total amount of data that can be transferred is still limited by the IEEE1394 bus.</p>
+<p>Host Adapters:
+The number of cameras that can be used to stream images continuously is limited by the IEEE1394 chipset used.</p>
+<p>The LSI (Agere) chipset used in the Point Grey PCI Express card is able to support 8 simultaneous DMA contexts.
+This means that 8 cameras are able to stream at any given time, with a combined total bandwidth of 800Mb/s.
+TI chipsets are able to support 4 simultaneous DMA contexts.</p>
+</div>
+</div>
+<div class="section" id="configuring-synchronized-capture-with-multiple-cameras">
+<h2>Configuring Synchronized Capture with Multiple Cameras<a class="headerlink" href="#configuring-synchronized-capture-with-multiple-cameras" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.flir.eu/support-center/iis/machine-vision/application-note/configuring-synchronized-capture-with-multiple-cameras/">https://www.flir.eu/support-center/iis/machine-vision/application-note/configuring-synchronized-capture-with-multiple-cameras/</a></p>
+<p>definition of “the same time” is that the cameras must take start exposing each set of images within microseconds of each other.
+1. use one “primary” camera to trigger one or more “secondary” cameras, using the primary camera’s strobe
+frame rates of the secondary cameras follow that of the primary camera.</p>
+<p>There are two steps to configuring synchronized capture:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Create a physical connection between the cameras by linking their GPIO pins.</p></li>
+<li><p>Configure inputs and outputs for each camera either with the SDK demo application or with code.</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>have all cameras triggered by an external hardware trigger (for example, a function generator). Any hardware trigger that provides a 3.3 or 5 V square wave TTL signal can trigger the cameras.</p></li>
+</ol>
+<p># Exsisting Solutions</p>
+<p>USB 3.1 Host Controller Card (35k LKR)
+<a class="reference external" href="https://www.flir.eu/products/usb-3.1-host-controller-card/">https://www.flir.eu/products/usb-3.1-host-controller-card/</a></p>
+</div>
+<div class="section" id="saving-images-at-high-bandwidth">
+<h2>Saving Images at High Bandwidth<a class="headerlink" href="#saving-images-at-high-bandwidth" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.flir.eu/support-center/iis/machine-vision/application-note/saving-images-at-high-bandwidth/">https://www.flir.eu/support-center/iis/machine-vision/application-note/saving-images-at-high-bandwidth/</a></p>
 <div class="toctree-wrapper compound">
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
